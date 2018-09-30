@@ -43,8 +43,10 @@ cd -
 find $BUILDDIR -iname *.pyc -exec rm {} \;
 find $BUILDDIR -iname *.pyo -exec rm {} \;
 
+# Find fpm outside PATH
+FPM=$(gem contents fpm | grep /bin/fpm)
 
-fpm -f \
+$FPM -f \
     --iteration $REVISION \
     -t rpm -s dir -C $BUILDDIR -n $NAME -v $VERSION \
     --config-files "/etc/elastalert/config.yml" \
