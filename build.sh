@@ -1,19 +1,29 @@
 #! /usr/bin/env bash
 set -xe
 
+export http_proxy=http://172.20.64.137:3128
+export https_proxy=$http_proxy
+
 export BASEDIR=$(dirname "$0")
 export NAME="elastalert"
-export VERSION="0.1.18"
+export VERSION="0.1.38"
 export REVISION="1.el7"
 export BUILDDIR="/tmp/build"
 export INSTALLDIR="/usr/share/python"
 
+echo "## install build pre-requisites"
+sudo bash -c "
+export http_proxy=$http_proxy
+export https_proxy=$http_proxy
 yum -y install ruby ruby-devel gcc make rpm-build openssl-devel libffi-devel epel-release
-yum -y install python-pip  python-virtualenv
-pip install virtualenv-tools
-pip install --upgrade pip
+yum -y install python36-pip  python36-virtualenv
+pip3 install virtualenv-tools3
+#pip3 install --upgrade pip
 gem install fpm --no-doc
+"
 
+
+echo "## start build"
 rm -fr $BUILDDIR
 mkdir -p $BUILDDIR$INSTALLDIR
 
@@ -28,10 +38,10 @@ mkdir -p $BUILDDIR/usr/lib/systemd/system
 cp $BASEDIR/conf/elastalert.service $BUILDDIR/usr/lib/systemd/system
 
 # Virtual Env
-virtualenv $BUILDDIR$INSTALLDIR/elastalert
-$BUILDDIR$INSTALLDIR/elastalert/bin/pip install --upgrade pip
-$BUILDDIR$INSTALLDIR/elastalert/bin/pip install "setuptools>=11.3" "elasticsearch>=5.0.0" "urllib3==1.21.1"
-$BUILDDIR$INSTALLDIR/elastalert/bin/pip install "elastalert==$VERSION"
+virtualenv-3.6 $BUILDDIR$INSTALLDIR/elastalert
+$BUILDDIR$INSTALLDIR/elastalert/bin/pip3 install --upgrade pip
+$BUILDDIR$INSTALLDIR/elastalert/bin/pip3 install "setuptools>=11.3" "elasticsearch>=5.0.0" "urllib3==1.21.1"
+$BUILDDIR$INSTALLDIR/elastalert/bin/pip3 install "elastalert==$VERSION"
 
 find $BUILDDIR ! -perm -a+r -exec chmod a+r {} \;
 
